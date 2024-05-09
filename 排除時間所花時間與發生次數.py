@@ -27,7 +27,25 @@ accident_data['事件排除所花時間'] = accident_data['事件排除'] - acci
 accident_data.loc[accident_data['事件排除所花時間'] < 0, '事件排除所花時間'] += 24 * 60
 
 # 顯示整合後的資料
-print(accident_data[['日期時間', '事件排除所花時間']].head())
+# print(accident_data[['日期時間', '事件排除所花時間']].head())
+
+# 以排除時間所花時間與發生次數做一張長條圖
+# 以5分鐘為間隔
+# x 軸為排除時間所花時間 (分鐘) ex. 0-5, 5-10, 10-15, ...
+# 在每個條形上方添加數字標籤
+# 將超過100分鐘的資料合併為100分鐘以上
+# y 軸為發生次數
+accident_data['事件排除所花時間'] = accident_data['事件排除所花時間'].apply(lambda x: 100 if x > 100 else x // 5 * 5)
+accident_data['事件排除所花時間'].value_counts().sort_index().plot(kind='bar', color='skyblue')
+plt.title("排除時間所花時間與發生次數(5分鐘為間隔)(100分鐘以上合併)")
+plt.xlabel("排除時間所花時間 (分鐘)")
+plt.ylabel("發生次數")
+plt.xticks(rotation=0)
+for i, v in enumerate(accident_data['事件排除所花時間'].value_counts().sort_index()):
+    plt.text(i, v + 1, str(v), ha='center', va='bottom')
+plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.2)
+# plt.savefig("排除時間所花時間與發生次數.png")
+plt.show()
 
 # 生成新的excel檔案
 # 不包含原本的年月日時分時間欄位、事件發生欄位、事件排除欄位
